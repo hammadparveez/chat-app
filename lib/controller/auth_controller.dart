@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:random_chat_app/model/user_model.dart';
+import 'package:random_chat_app/repository/user_repository.dart';
 
 enum AuthStatus { error, success, loading }
 
 class AuthController extends ChangeNotifier {
+  UserRepository _userRepo = UserRepository();
+
   AuthStatus? _status;
   AuthStatus? get status => _status;
-
   set status(value) {
     _status = value;
     notifyListeners();
@@ -35,6 +38,11 @@ class AuthController extends ChangeNotifier {
             idToken: authentication.idToken,
             accessToken: authentication.accessToken);
         await FirebaseAuth.instance.signInWithCredential(credentials);
+        await _userRepo.addUser(UserModel(
+            uid: user.id,
+            displayName: user.displayName,
+            email: user.email,
+            profilePic: user.photoUrl));
       } else {
         status = null;
       }

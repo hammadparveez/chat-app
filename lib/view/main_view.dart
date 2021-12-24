@@ -22,8 +22,7 @@ class _MainViewState extends ConsumerState<MainView> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(authController);
-    if (controller.status == AuthStatus.success) return const ChatView();
-
+    if (controller.status == AuthStatus.success) return  ChatView();
     return Scaffold(
       body: Center(
         child: Column(
