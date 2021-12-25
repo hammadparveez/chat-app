@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Android 720",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "localhost:5555",
+        },
+        {
+            "name": "Profile (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Web",
+            "program": "lib/main.dart",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "args": [
+              "-d",
+              "edge"
+            ]
+          },
+          {
+            "name": "Android 540",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "localhost:5565",
+        },
+          
+    ],
+    "compounds": [
+        {
+          "name": "All Devices",
+          "configurations": [
+            "Web",
+            "Android 540",
+            "Android 720",
+          ]
+        }
+    ],
+}

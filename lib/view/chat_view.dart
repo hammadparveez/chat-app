@@ -3,11 +3,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:random_chat_app/model/chat_model.dart';
 import 'package:random_chat_app/pods.dart';
 
-class ChatView extends ConsumerWidget {
+class ChatView extends ConsumerStatefulWidget {
   ChatView({Key? key}) : super(key: key);
-  final List<ChatModel> chatModels = [];
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends ConsumerState<ChatView> {
+  final List<ChatModel> chatModels = [];
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(chatController).msgListener();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chatSnapshot = ref.watch(chatController).chatSnapshot;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -21,30 +42,43 @@ class ChatView extends ConsumerWidget {
       body: Column(
         children: [
           Expanded(
-              child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (_, index) {
-              return Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.purple[900],
-                  ),
-                  child: Text("Hi this is mason",
-                      style: TextStyle(color: Colors.white)),
-                ),
-              );
-            },
-          )),
+              child: StreamBuilder(
+                  stream: chatSnapshot,
+                  builder: (context, AsyncSnapshot<List<ChatModel>> snapshot) {
+                    final data = snapshot.data;
+                    return ListView.builder(
+                      itemCount: data?.length ?? 0,
+                      itemBuilder: (_, index) {
+                        return Align(
+                          alignment: data![index].isSender
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.purple[900],
+                            ),
+                            child: Text(data[index].message,
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        );
+                      },
+                    );
+                  })),
           Row(
             children: [
               Expanded(
-                child: TextFormField(),
+                child: TextFormField(
+                  controller: controller,
+                ),
               ),
-              TextButton(onPressed: () {}, child: Text('Send')),
+              TextButton(
+                  onPressed: () {
+                    ref.read(chatController).sendMessage(controller.text);
+                  },
+                  child: Text('Send')),
             ],
           ),
         ],

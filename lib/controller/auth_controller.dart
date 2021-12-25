@@ -29,7 +29,7 @@ class AuthController extends ChangeNotifier {
   authenticate() async {
     try {
       status = AuthStatus.loading;
-
+      await GoogleSignIn().signOut();
       final user = await GoogleSignIn().signIn();
 
       if (user != null) {
@@ -37,9 +37,10 @@ class AuthController extends ChangeNotifier {
         final credentials = GoogleAuthProvider.credential(
             idToken: authentication.idToken,
             accessToken: authentication.accessToken);
-        await FirebaseAuth.instance.signInWithCredential(credentials);
+        final authenticatedUser =
+            await FirebaseAuth.instance.signInWithCredential(credentials);
         await _userRepo.addUser(UserModel(
-            uid: user.id,
+            uid: authenticatedUser.user!.uid,
             displayName: user.displayName,
             email: user.email,
             profilePic: user.photoUrl));

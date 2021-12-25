@@ -22,7 +22,19 @@ class _MainViewState extends ConsumerState<MainView> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(authController);
-    if (controller.status == AuthStatus.success) return  ChatView();
+    ref.listen(authController, (previous, AuthController next) {
+      if (next.status == AuthStatus.error) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                content: Text('Error Occured during authentication'),
+              );
+            });
+      }
+    });
+
+    if (controller.status == AuthStatus.success) return ChatView();
     return Scaffold(
       body: Center(
         child: Column(
